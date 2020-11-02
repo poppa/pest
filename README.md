@@ -3,15 +3,15 @@
 This unit test framework is just in its infancy. Although it is, on its surface,
 heaviliy inspired by [Jest](https://jestjs.io/), I have no intentions of making
 a Jest implementation in Pike. Jest has more than 1,100 contributors and
-probably a couple to 100,000 lines of code.
+probably a couple of 100,000 lines of code.
 
 ## Howto use
 
 Clone this repository and symlink it into your `PIKE_MODULE_PATH` as
 `Pest.pmod` (or point to it with the Pike `-M` argument).
 
-Create a directory names `test` (or call it what ever you like). Create a
-test-runner file in this directory (it can be called whatever), but for the
+Create a directory named `test` (or call it what ever you like). Create a
+_test-runner file_ in this directory (it can be called whatever), but for the
 sake of this example lets call it `run-tests.pike`
 
 ```pike
@@ -24,7 +24,7 @@ int main() {
 }
 ```
 
-Ok, so now lets add a test-suite file to the tests directory. By default
+Ok, so now lets add a test-suite file to the `test` directory. By default
 `run_tests()` will scan for files ending in `*.spec.pike`, but what file globs
 to scan for can be given as second argument to `run_tests()`. So
 `run_tests(dir, "*.test.pike")` is perfectly fine if one prefer to name the
