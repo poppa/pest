@@ -150,5 +150,5 @@ Ran all tests in 0.03000 seconds
   - `->to_have_been_called()`: Checks that a function has been called. The
     function given to `expect()` must be of type `Pest.Fn` (can be created
     via the "factory method" `Pest.fn(callback)`).
-  - `->to_have_been_calld_n_time(n)`: Same as above except it checks if the
+  - `->to_have_been_called_n_times(n)`: Same as above except it checks if the
     function was called exactly `n` times.
