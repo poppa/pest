@@ -176,6 +176,9 @@ public void run_test(string root_dir, string|void files_glob) {
     }
   }
 
+  string icon_ok = Colors.green("✔︎");
+  string icon_fail = Colors.red("✘");
+
   foreach (runners, Runner runner) {
     write("\nReport: %s\n", Colors.light_gray(runner->file));
 
@@ -186,14 +189,14 @@ public void run_test(string root_dir, string|void files_glob) {
         foreach (t->tests, Test tt) {
           write(
             "    %s %s\n",
-            tt->is_success ? Colors.green("✔︎") : Colors.red("x"),
+            tt->is_success ? icon_ok : icon_fail,
             Colors.light_gray(tt->description)
           );
         }
       } else {
         write(
           "  %s %s\n",
-          t->is_success ? Colors.green("✔︎") : Colors.red("x"),
+          t->is_success ? icon_ok : icon_fail,
           Colors.light_gray(t->description)
         );
       }
