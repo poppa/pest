@@ -22,8 +22,8 @@ public class ExpectError {
     string message = sprintf(
       "Expected: %O\n"
       "Received: %O\n",
-      expected,
-      ex->expression
+      safe_str(expected),
+      safe_str(ex->expression)
     );
 
     ::create(message, backtrace());
@@ -33,11 +33,19 @@ public class ExpectError {
     string message = sprintf(
       "Expected: %O\n"
       "Received: %O\n",
-      expected,
-      ex
+      safe_str(expected),
+      safe_str(ex)
     );
 
     ::create(message, backtrace());
+  }
+
+  protected mixed safe_str(mixed s) {
+    if (stringp(s)) {
+      return replace(s, "\n", "\\n");
+    }
+
+    return s;
   }
 
   public void print_error() {
