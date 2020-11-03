@@ -30,3 +30,7 @@ public int `successes() {
 public void|Error.Generic `error() {
   return err;
 }
+
+public bool `is_success() {
+  return !err;
+}

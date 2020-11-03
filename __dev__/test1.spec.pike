@@ -40,13 +40,13 @@ int main() {
     });
   });
 
-  // describe("Second description", lambda () {
-  //   test("Some test in scope 2", lambda () {
-  //     expect(1)->to_be_truthy();
-  //   });
+  describe("Second description", lambda () {
+    test("Some test in scope 2", lambda () {
+      expect(1)->to_be_truthy();
+    });
 
-  //   test("Some other test in scope 2", lambda () {
-  //     expect(1)->to_be_falsy();
-  //   });
-  // });
+    test("Some other test in scope 2", lambda () {
+      expect(1)->to_be_falsy();
+    });
+  });
 }

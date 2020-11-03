@@ -176,6 +176,30 @@ public void run_test(string root_dir, string|void files_glob) {
     }
   }
 
+  foreach (runners, Runner runner) {
+    write("\nReport: %s\n", Colors.light_gray(runner->file));
+
+    foreach (runner->queue, object t) {
+      if (runner->is_describer(t)) {
+        write("  %s\n", t->description);
+
+        foreach (t->tests, Test tt) {
+          write(
+            "    %s %s\n",
+            tt->is_success ? Colors.green("✔︎") : Colors.red("x"),
+            Colors.light_gray(tt->description)
+          );
+        }
+      } else {
+        write(
+          "  %s %s\n",
+          t->is_success ? Colors.green("✔︎") : Colors.red("x"),
+          Colors.light_gray(t->description)
+        );
+      }
+    }
+  }
+
   float took = (end_time - start_time) / 1000.0;
 
   write("\n%s\n", "-"*78);

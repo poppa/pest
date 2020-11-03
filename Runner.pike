@@ -1,10 +1,12 @@
+public typedef array(object(.Describer)|object(.Test)) RunQueue;
+
 public string file;
 public program test_suite_program;
 public object test_suite_object;
 
 protected bool is_compiled_ok = false;
 protected .Describer current_describer;
-protected array(object(.Describer)|object(.Test)) run_queue = ({});
+protected RunQueue run_queue = ({});
 
 protected void create(string file, program test_suite_program) {
   this::file = file;
@@ -65,15 +67,10 @@ public int get_number_of_tests() {
 public void execute() {
   foreach (run_queue, object obj) {
     if (is_describer(obj)) {
-      // write("  %s\n", obj->description);
       foreach (obj->tests, .Test t) {
-        // write("    %s\n", t->description);
-        // write("    ...");
         t->run();
       }
     } else {
-      // write("  %s\n", obj->description);
-      // write("  ...");
       obj->run();
     }
   }
@@ -99,8 +96,16 @@ public mapping report() {
   ]);
 }
 
-protected bool is_describer(object o) {
+public bool is_describer(object o) {
   return object_program(o) == .Describer;
+}
+
+public bool is_test(object o) {
+  return object_program(o) == .Test;
+}
+
+public RunQueue `queue() {
+  return run_queue;
 }
 
 protected string _sprintf() {

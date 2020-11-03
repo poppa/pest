@@ -18,7 +18,7 @@ protected typedef function(sprintf_format, sprintf_args:string) ColorFn;
 protected ColorFn make_color_fn(Color clr) {
   return lambda (sprintf_format s, sprintf_args ... rest) {
     string ss = sprintf(s, @rest);
-    return sprintf("%s%s%s", clr, ss, Reset);
+    return sprintf("%s%s%s", clr, string_to_utf8(ss), Reset);
   };
 }
 
