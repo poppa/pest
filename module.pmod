@@ -152,13 +152,26 @@ public void run_test(string root_dir, string|void files_glob) {
 
       foreach (res->failures, Test t) {
         werror("\n");
-        werror(
-          "  %s %s (%s)\n\n",
-          Colors.cyan("@test:"),
-          t->description,
-          Colors.grey(t->error->failed_location())
-        );
-        t->error->print_error();
+        if (object_program(t->error) == .Error.ExpectError) {
+          werror(
+            "  %s %s (%s)\n\n",
+            Colors.cyan("@test:"),
+            t->description,
+            Colors.grey(t->error->failed_location())
+          );
+          t->error->print_error();
+        } else {
+          [string file, string fnname] = Error.failed_location(t->error);
+          werror("  Error in %s %s\n", Colors.cyan("@test:"), t->description);
+          werror(
+            "  Error occured in %s in function %s\n",
+            Colors.light_gray(file),
+            Colors.magenta(fnname + "()")
+          );
+          werror(Colors.red("  > %s\n", t->error[0]));
+          werror("  %s\n", Colors.yellow("Backtrace:"));
+          Error.print_backtrace(t->error);
+        }
       }
     }
   }

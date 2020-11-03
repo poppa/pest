@@ -1,5 +1,20 @@
 import "../module";
 
+public mixed failed_location(Error.Generic err) {
+  object frame = err[1][-1];
+  string file = frame[0];
+  int line = frame[1];
+  catch (string fn_name = function_name(frame[2]));
+
+  return ({ sprintf("%s:%d", file, line), fn_name });
+}
+
+public void print_backtrace(Error.Generic err) {
+  foreach (err[1], object frame) {
+    werror("    %O\n", frame);
+  }
+}
+
 public class ExpectError {
   inherit Error.Generic;
 
