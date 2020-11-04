@@ -118,7 +118,7 @@ public void run_test(string root_dir, string|void files_glob) {
   write("Test suites: %s\n", Colors.cyan("%d", n_suites));
   write("Tests: %s\n\n", Colors.cyan("%d", n_tests));
 
-  int start_time = gethrtime();
+  int start_time = time();
 
   foreach (runners, Runner runner) {
     write(Colors.light_gray("Running tests in %q\n", runner->file));
@@ -127,7 +127,7 @@ public void run_test(string root_dir, string|void files_glob) {
 
   write("\n%s\n", Colors.green("Done"));
 
-  int end_time = gethrtime();
+  float took = time(start_time);
 
   int total_successes = 0;
   int total_failures = 0;
@@ -202,8 +202,6 @@ public void run_test(string root_dir, string|void files_glob) {
       }
     }
   }
-
-  float took = (end_time - start_time) / 1000.0;
 
   write("\n%s\n", "-"*78);
   write(
