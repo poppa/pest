@@ -2,6 +2,7 @@ public string description;
 protected .ProvidesCallbackFunction executor;
 protected int ok_count = 0;
 protected Error.Generic err;
+protected bool was_run = false;
 
 protected void create(string description, .ProvidesCallbackFunction executor) {
   this::description = description;
@@ -9,6 +10,8 @@ protected void create(string description, .ProvidesCallbackFunction executor) {
 }
 
 public void run() {
+  was_run = true;
+
   mixed err = catch(executor(lambda () {
     werror("Done callback called\n");
   }));
@@ -33,4 +36,8 @@ public void|Error.Generic `error() {
 
 public bool `is_success() {
   return !err;
+}
+
+public bool `skipped() {
+  return !was_run;
 }

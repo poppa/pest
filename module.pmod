@@ -8,6 +8,7 @@ import ".";
 public typedef function(void:void) VoidFunction;
 public typedef function(void:object(GenericError)|void) DoneFunction;
 public typedef function(DoneFunction|void:void) ProvidesCallbackFunction;
+public typedef string|array(string) GlobArg;
 
 private array(object(Runner)) runners = ({});
 private Runner current_runner;
@@ -64,7 +65,11 @@ public Fn fn(function callback) {
   return Fn(callback);
 }
 
-public void run_test(string root_dir, string|void files_glob) {
+public void run_test(
+  string root_dir,
+  GlobArg|void files_glob,
+  GlobArg|void tests_glob
+) {
   if (!files_glob) {
     files_glob = "*.spec.pike";
   }
@@ -122,7 +127,7 @@ public void run_test(string root_dir, string|void files_glob) {
 
   foreach (runners, Runner runner) {
     write(Colors.light_gray("Running tests in %q\n", runner->file));
-    runner->execute();
+    runner->execute(tests_glob);
   }
 
   write("\n%s\n", Colors.green("Done"));
@@ -131,15 +136,18 @@ public void run_test(string root_dir, string|void files_glob) {
 
   int total_successes = 0;
   int total_failures = 0;
+  int total_skipped = 0;
 
   foreach (runners, Runner runner) {
     mapping res = runner->report();
 
     int succeeded = sizeof(res->successes);
     int failed = sizeof(res->failures);
+    int skipped = sizeof(res->skips);
 
     total_successes += succeeded;
     total_failures += failed;
+    total_skipped += skipped;
 
     if (failed) {
       werror("\n%s\n", "=" * 78);
@@ -180,25 +188,37 @@ public void run_test(string root_dir, string|void files_glob) {
   string icon_fail = Colors.red("✘");
 
   foreach (runners, Runner runner) {
+    if (!runner->has_run_tests()) {
+      continue;
+    }
+
     write("\nReport: %s\n", Colors.light_gray(runner->file));
 
     foreach (runner->queue, object t) {
       if (runner->is_describer(t)) {
+        if (t->number_of_tests_run() == 0) {
+          continue;
+        }
+
         write("  %s\n", t->description);
 
         foreach (t->tests, Test tt) {
-          write(
-            "    %s %s\n",
-            tt->is_success ? icon_ok : icon_fail,
-            Colors.light_gray(tt->description)
-          );
+          if (!tt->skipped) {
+            write(
+              "    %s %s\n",
+              tt->is_success ? icon_ok : icon_fail,
+              Colors.light_gray(tt->description)
+            );
+          }
         }
       } else {
-        write(
-          "  %s %s\n",
-          t->is_success ? icon_ok : icon_fail,
-          Colors.light_gray(t->description)
-        );
+        if (!t->skipped) {
+          write(
+            "  %s %s\n",
+            t->is_success ? icon_ok : icon_fail,
+            Colors.light_gray(t->description)
+          );
+        }
       }
     }
   }
@@ -210,9 +230,10 @@ public void run_test(string root_dir, string|void files_glob) {
     Colors.cyan(""+n_suites), n_suites != 1 ? "s": ""
   );
   write(
-    "%s test%s succeeded, %s test%s failed\n",
+    "%s test%s succeeded, %s test%s failed, %s test%s skipped\n",
     Colors.green(""+total_successes), total_successes != 1 ? "s" : "",
-    Colors.red(""+total_failures), total_failures != 1 ? "s" : ""
+    Colors.red(""+total_failures), total_failures != 1 ? "s" : "",
+    Colors.yellow(""+total_skipped), total_skipped != 1 ? "s" : ""
   );
   write("Ran all tests in %s seconds\n", Colors.cyan(sprintf("%.5f", took)));
   write("%s\n", "-"*78);

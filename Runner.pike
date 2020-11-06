@@ -64,14 +64,18 @@ public int get_number_of_tests() {
   return n_tests;
 }
 
-public void execute() {
+public void execute(.GlobArg|void test_glob) {
   foreach (run_queue, object obj) {
     if (is_describer(obj)) {
       foreach (obj->tests, .Test t) {
-        t->run();
+        if (!test_glob || glob(test_glob, t->description)) {
+          t->run();
+        }
       }
     } else {
-      obj->run();
+      if (!test_glob || glob(test_glob, obj->description)) {
+        obj->run();
+      }
     }
   }
 }
@@ -87,12 +91,14 @@ public mapping report() {
     }
   }
 
-  array successes = filter(tests, lambda (.Test t) { return !t->error; });
+  array successes = filter(tests, lambda (.Test t) { return t->is_success; });
   array failures = filter(tests, lambda (.Test t) { return !!t->error; });
+  array skips = filter(tests, lambda (.Test t) { return t->skipped; });
 
   return ([
     "successes": successes,
     "failures": failures,
+    "skips": skips,
   ]);
 }
 
@@ -106,6 +112,19 @@ public bool is_test(object o) {
 
 public RunQueue `queue() {
   return run_queue;
+}
+
+public bool has_run_tests() {
+  function filter_fn = lambda(.Test|.Describer t) {
+    if (is_test(t)) {
+      return !t->skipped;
+    } else {
+      return t->number_of_tests_run() > 0;
+    }
+  };
+
+  int n = sizeof(filter(run_queue, filter_fn)) > 0;
+  return n > 0;
 }
 
 protected string _sprintf() {

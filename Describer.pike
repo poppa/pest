@@ -19,3 +19,7 @@ public void add_test(.Test test) {
 public array(.Test) `tests() {
   return _tests;
 }
+
+public int number_of_tests_run() {
+  return sizeof(filter(_tests, lambda (.Test t) { return !t->skipped; }));
+}
