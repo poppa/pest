@@ -17,9 +17,6 @@ public void run() {
   }));
 
   if (err) {
-    // werror("\tExpectation threw:\n%s\n", err->message());
-    // werror("\t%s\n", err->failed_location());
-    // err->failed_source();
     this::err = err;
   } else {
     ok_count += 1;
