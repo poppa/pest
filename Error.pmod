@@ -84,6 +84,7 @@ public class ExpectError {
 
       if (idx >= start) {
         string sln = iter->value();
+        sln = replace(sln, "%", "%%");
         string fmt_line = sprintf("%"+line_len+"d: %s", idx, sln);
 
         if (idx != line) {
