@@ -32,7 +32,7 @@ public void|Error.Generic `error() {
 }
 
 public bool `is_success() {
-  return !err;
+  return !err && !skipped;
 }
 
 public bool `skipped() {
