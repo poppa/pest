@@ -49,3 +49,21 @@ public void to_have_been_called_n_times(int n) {
     THROW_EXPECT_ERR(expression->count, n);
   }
 }
+
+public void to_throw(string|void message) {
+  if (!functionp(expression)) {
+    error("Expression must be a function when calling to_throw()\n");
+  }
+
+  mixed err = catch { expression(); };
+
+  if (!err) {
+    THROW_EXPECT_ERR(this, "to throw");
+  }
+
+  if (message && arrayp(err)) {
+    if (message != err[0]) {
+      THROW_EXPECT_ERR(err[0], message);
+    }
+  }
+}
