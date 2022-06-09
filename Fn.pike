@@ -5,7 +5,7 @@ protected void create(function callback) {
   this::callback = callback;
 }
 
-public mixed `()(function _, mixed ... args) {
+public mixed `()(mixed ... args) {
   callstack += ({ args });
   return callback(@args);
 }
