@@ -70,6 +70,8 @@ public void run_test(
   GlobArg|void files_glob,
   GlobArg|void tests_glob
 ) {
+  add_constant("IS_PEST", true);
+
   if (!files_glob) {
     files_glob = "*.spec.pike";
   }
