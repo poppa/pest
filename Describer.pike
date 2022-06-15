@@ -1,4 +1,5 @@
 public string description;
+public bool skip = false;
 protected .VoidFunction tests_executor;
 
 protected array(.Test) _tests = ({});
@@ -13,6 +14,10 @@ public void run() {
 }
 
 public void add_test(.Test test) {
+  if (skip) {
+    test->skip = true;
+  }
+
   _tests += ({ test });
 }
 
@@ -22,4 +27,8 @@ public array(.Test) `tests() {
 
 public int number_of_tests_run() {
   return sizeof(filter(_tests, lambda (.Test t) { return !t->skipped; }));
+}
+
+public bool `skipped() {
+  return skip;
 }

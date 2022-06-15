@@ -34,19 +34,19 @@ int main() {
       expect(fun)->to_have_been_called_n_times(2);
     });
 
-    test("Another test", lambda() {
+    skip->test("Another test", lambda() {
       expect(([]))->to_equal(([]));
       // expect("a")->to_be_falsy();
     });
   });
 
-  describe("Second description", lambda () {
+  skip->describe("Second description", lambda () {
     test("Some test in scope 2", lambda () {
       expect(1)->to_be_truthy();
     });
 
     test("Some other test in scope 2", lambda () {
-      expect(1)->to_be_falsy();
+      expect(0)->to_be_falsy();
     });
   });
 }

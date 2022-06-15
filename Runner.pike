@@ -30,20 +30,35 @@ public void collect_tests() {
   mixed err = catch(test_suite_object->main());
 
   if (err) {
-    werror("collect_test failed: %O\n", err);
+    werror("collect_test failed: %s => %O\n", describe_backtrace(err), err);
   }
 }
 
-public void add_test(string description, function executor) {
+public void add_test(string description, function executor, void|bool skip) {
+  .Test t = .Test(description, executor);
+
+  if (skip) {
+    t->skip = true;
+  }
+
   if (current_describer) {
-    current_describer->add_test(.Test(description, executor));
+    current_describer->add_test(t);
   } else {
-    run_queue += ({ .Test(description, executor) });
+    run_queue += ({ t });
   }
 }
 
-public void add_describer(string description, function executor) {
+public void add_describer(
+  string description,
+  function executor,
+  void|bool skip
+) {
   .Describer d = .Describer(description, executor);
+
+  if (skip) {
+    d->skip = true;
+  }
+
   current_describer = d;
   d->run();
   run_queue += ({ d });

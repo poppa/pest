@@ -14,7 +14,7 @@ private array(object(Runner)) runners = ({});
 private Runner current_runner;
 
 // NOTE! The mutex stuff in this file serves no purpose atm, since everything
-// is run synchronously right now.
+//       is run synchronously right now.
 private Thread.Mutex runners_mux = Thread.Mutex();
 
 #define ASSERT_RUNNER()                                           \
@@ -26,6 +26,8 @@ private Thread.Mutex runners_mux = Thread.Mutex();
       );                                                          \
     }                                                             \
   } while (0)
+
+public Skip skip = Skip(lambda () { return current_runner; });
 
 public void describe(string description, VoidFunction tests_executor) {
   if (runners_mux->current_locking_key()) {

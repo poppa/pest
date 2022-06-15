@@ -1,4 +1,5 @@
 public string description;
+public bool skip = false;
 protected .ProvidesCallbackFunction executor;
 protected int ok_count = 0;
 protected Error.Generic err;
@@ -36,5 +37,5 @@ public bool `is_success() {
 }
 
 public bool `skipped() {
-  return !was_run;
+  return skip || !was_run;
 }
