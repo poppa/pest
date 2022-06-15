@@ -104,7 +104,7 @@ public void run_test(
 
   array(mapping(string:function)) test_suites = ({});
 
-  foreach (files, string file) {
+  foreach (sort(files), string file) {
     program test_suite_prog;
 
     if (mixed err = catch(test_suite_prog = compile_file(file))) {
