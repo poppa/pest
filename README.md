@@ -137,6 +137,20 @@ Ran all tests in 0.03000 seconds
 **_Screenshot of output_**
 ![Screen shot](./shot.png)
 
+### Skip tests
+
+If you want to skip certain tests or all tests in a certain `describe()`-block
+you can prefix those `test()`s and `describe()`s with `skip->`:
+
+```pike
+skip->describe("Not yet ready...", lambda() { ... });
+
+describe("Some other tests", lambda () {
+  // Skip for now, network stuff prohibits this from succeeding.
+  skip->test("Yadda", lambda() {});
+});
+```
+
 ## Limitations
 
 - Atm all tests and test-suites are run synchronously.
