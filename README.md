@@ -141,6 +141,7 @@ Ran all tests in 0.03000 seconds
 
 - Atm all tests and test-suites are run synchronously.
 - These are the implemented methods on `expect(expr)`
+
   - `->to_be_truthy()`: Checks that a value is "defined", which in Pike terms
     pretty much is anything not `0`.
   - `->to_be_falsy()`: The inverse of the above.
@@ -152,3 +153,11 @@ Ran all tests in 0.03000 seconds
     via the "factory method" `Pest.fn(callback)`).
   - `->to_have_been_called_n_times(n)`: Same as above except it checks if the
     function was called exactly `n` times.
+  - `->to_throw(string|void)`: Expect the expression to throw an
+    error. If a string is given as argument that should be the message of the
+    thrown error. **NOTE!** `expect()` must be given a `lambda () {}` wrapping
+    the expression for this to work:
+
+    ```pike
+    expect(lambda() { throwing_expr(); })->to_throw();
+    ```
