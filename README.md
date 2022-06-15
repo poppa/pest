@@ -12,23 +12,34 @@ Clone this repository and symlink it into your `PIKE_MODULE_PATH` as
 
 Create a directory named `test` (or call it what ever you like). Create a
 _test-runner file_ in this directory (it can be called whatever), but for the
-sake of this example lets call it `run-tests.pike`
+sake of this example lets call it `run-tests.pike`, which only needs to
+inherit `Pest.Main`.
 
 ```pike
 # test/run-test.pike
-
-import Pest;
-
-int main() {
-  run_tests(__DIR__);
-}
+inherit Pest.Main;
 ```
 
-Ok, so now lets add a test-suite file to the `test` directory. By default
-`run_tests()` will scan for files ending in `*.spec.pike`, but what file globs
-to scan for can be given as second argument to `run_tests()`. So
-`run_tests(dir, "*.test.pike")` is perfectly fine if one prefer to name the
-files as such.
+By default `Pest.Main` will scan for files ending in `*.spec.pike`, but what
+file names to scan for can be given as option to `Pest.Main` via the
+`-f|--file` option, which takes a `glob`. You can also choose to run specific
+tests based on their description by passing the `-t|--test` option, which also
+takes a `glob`.
+
+You can also pass the `-v|--verbose` option to `Pest.Main` to ge a more verbose
+test report output.
+
+### `Pest.Main` options
+
+So these are the default options to `Pest.Main`:
+
+```
+-f|--file     glob    What files to treat as test files.
+-t|--test     glob    What tests to run (matching test description)
+-v|--verbose          More verbose test result output
+```
+
+Ok, so now lets add a test-suite file to the `test` directory.
 
 ```pike
 # test/readme.spec.pike

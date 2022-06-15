@@ -69,20 +69,35 @@ public Fn fn(function callback) {
 
 public void run_test(
   string root_dir,
-  GlobArg|void files_glob,
-  GlobArg|void tests_glob
-) {
+  void|mapping(string:GlobArg|bool) args
+)
+//! Run all tests in @[root_dir]
+//!
+//! @param root_dir Base directory of all test files
+//! @param args
+//   All members are optional
+//!  @mapping
+//!   @member GlobArg "files_glob"
+//!    Only run test files matching this glob (default `*.spec.pike`)
+//!   @member GlobArg "tests_glob"
+//!    Only run tests where the description matches this glob
+//!   @member bool "verbose"
+//!    Verbose output (default `false`)
+//!  @endmapping
+{
   add_constant("IS_PEST", true);
 
-  if (!files_glob) {
-    files_glob = "*.spec.pike";
+  args = args || ([]);
+
+  if (!args->files_glob) {
+    args->files_glob = "*.spec.pike";
   }
 
   object(Filesystem.Traversion) t = Filesystem.Traversion(root_dir);
   array(string) files = ({});
 
   foreach (t; string dir; string file) {
-    if (glob(files_glob, file)) {
+    if (glob(args->files_glob, file)) {
       files += ({ combine_path(dir, file) });
     }
   }
@@ -131,7 +146,7 @@ public void run_test(
 
   foreach (runners, Runner runner) {
     write(Colors.light_gray("Running tests in %q\n", runner->file));
-    runner->execute(tests_glob);
+    runner->execute(args->tests_glob);
   }
 
   write("\n%s\n", Colors.green("Done"));
@@ -190,6 +205,7 @@ public void run_test(
 
   string icon_ok = Colors.green("✔︎");
   string icon_fail = Colors.red("✘");
+  string icon_skip = Colors.yellow("⦿");
 
   foreach (runners, Runner runner) {
     if (!runner->has_run_tests()) {
@@ -198,32 +214,69 @@ public void run_test(
 
     write("\nReport: %s\n", Colors.light_gray(runner->file));
 
+    mapping collect = args->verbose ? UNDEFINED : ([]);
+
     foreach (runner->queue, object t) {
       if (runner->is_describer(t)) {
-        if (t->number_of_tests_run() == 0) {
-          continue;
+        if (args->verbose) {
+          write("  %s\n", t->description);
+          if (t->number_of_tests_run() == 0) {
+            write("    %s %s\n", icon_skip, Colors.light_gray("No tests run"));
+            continue;
+          }
         }
 
-        write("  %s\n", t->description);
-
         foreach (t->tests, Test tt) {
-          if (!tt->skipped) {
-            write(
-              "    %s %s\n",
-              tt->is_success ? icon_ok : icon_fail,
-              Colors.light_gray(tt->description)
-            );
+          if (args->verbose) {
+            if (!tt->skipped) {
+              write(
+                "    %s %s\n",
+                tt->is_success ? icon_ok : icon_fail,
+                Colors.light_gray(tt->description)
+              );
+            }
+          } else {
+            if (tt->skipped) {
+              collect->skipped += 1;
+            } else if (tt->is_success) {
+              collect->success += 1;
+            } else {
+              collect->failure += 1;
+            }
           }
         }
       } else {
-        if (!t->skipped) {
-          write(
-            "  %s %s\n",
-            t->is_success ? icon_ok : icon_fail,
-            Colors.light_gray(t->description)
-          );
+        if (args->verbose) {
+          if (!t->skipped) {
+            write(
+              "  %s %s\n",
+              t->is_success ? icon_ok : icon_fail,
+              Colors.light_gray(t->description)
+            );
+          }
+        } else {
+          if (t->skipped) {
+            collect->skipped += 1;
+          } else if (t->is_success) {
+            collect->success += 1;
+          } else {
+            collect->failure += 1;
+          }
         }
       }
+
+    }
+
+    if (collect) {
+      int su = collect->success;
+      int sk = collect->skipped;
+      int fa = collect->failure;
+      write(
+        "        %s test%s succeeded, %s test%s failed, %s test%s skipped\n",
+        Colors.green("" + su), su != 1 ? "s" : "",
+        Colors.red("" + fa), fa != 1 ? "s" : "",
+        Colors.yellow("" + sk), sk != 1 ? "s" : ""
+      );
     }
   }
 
