@@ -13,6 +13,10 @@ protected void create(string description, .ProvidesCallbackFunction executor) {
 public void run() {
   was_run = true;
 
+  if (skip) {
+    return;
+  }
+
   mixed err = catch(executor(lambda () {
     werror("Done callback called\n");
   }));

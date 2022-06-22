@@ -35,8 +35,7 @@ int main() {
     });
 
     skip->test("Another test", lambda() {
-      expect(([]))->to_equal(([]));
-      // expect("a")->to_be_falsy();
+      error("I shouldn't throw");
     });
   });
 
