@@ -207,6 +207,32 @@ public void run_test(
   string icon_fail = Colors.red("✘");
   string icon_skip = Colors.yellow("⦿");
 
+  void report_test(object(Test) t, mapping collect) {
+    if (args->verbose) {
+      if (!t->skipped) {
+        write(
+          "    %s %s\n",
+          t->is_success ? icon_ok : icon_fail,
+          Colors.light_gray(t->description)
+        );
+      } else {
+        write(
+          "    %s %s\n",
+          icon_skip,
+          Colors.light_gray(t->description)
+        );
+      }
+    } else {
+      if (t->skipped) {
+        collect->skipped += 1;
+      } else if (t->is_success) {
+        collect->success += 1;
+      } else {
+        collect->failure += 1;
+      }
+    }
+  };
+
   foreach (runners, Runner runner) {
     if (!runner->has_run_tests()) {
       continue;
@@ -220,51 +246,18 @@ public void run_test(
       if (runner->is_describer(t)) {
         if (args->verbose) {
           write("  %s\n", t->description);
-          if (t->number_of_tests_run() == 0) {
+          if (t->number_of_tests_run() == 0 && !t->skipped) {
             write("    %s %s\n", icon_skip, Colors.light_gray("No tests run"));
             continue;
           }
         }
 
         foreach (t->tests, Test tt) {
-          if (args->verbose) {
-            if (!tt->skipped) {
-              write(
-                "    %s %s\n",
-                tt->is_success ? icon_ok : icon_fail,
-                Colors.light_gray(tt->description)
-              );
-            }
-          } else {
-            if (tt->skipped) {
-              collect->skipped += 1;
-            } else if (tt->is_success) {
-              collect->success += 1;
-            } else {
-              collect->failure += 1;
-            }
-          }
+          report_test(tt, collect);
         }
       } else {
-        if (args->verbose) {
-          if (!t->skipped) {
-            write(
-              "  %s %s\n",
-              t->is_success ? icon_ok : icon_fail,
-              Colors.light_gray(t->description)
-            );
-          }
-        } else {
-          if (t->skipped) {
-            collect->skipped += 1;
-          } else if (t->is_success) {
-            collect->success += 1;
-          } else {
-            collect->failure += 1;
-          }
-        }
+        report_test(t, collect);
       }
-
     }
 
     if (collect) {
